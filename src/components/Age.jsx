@@ -4,34 +4,33 @@ import { useSpring, animated } from 'react-spring';
 
 function Age() {
 
-    const [day, setDay] = useState('')
-    const [month, setMonth] = useState('')
-    const [year, setYear] = useState('')
+    const [day, setDay] = useState('');
+    const [month, setMonth] = useState('');
+    const [year, setYear] = useState('');
     const [isDate1Greater, setIsDate1Greater] = useState(null);
-    const [daymain, setDaymain] = useState('')
-    const [monthmain, setMonthmain] = useState('')
-    const [yearmain, setYearmain] = useState('')
-    const [incYear,setInrYear] =useState('');
-
+    const [daymain, setDaymain] = useState('');
+    const [monthmain, setMonthmain] = useState(0);
+    const [yearmain, setYearmain] = useState(0);
+    const [incYear, setInrYear] = useState(0);
+    const [incDay, setInrDay] = useState(0);
+    const [incMonth, setInrMonth] = useState(0);
 
     const handleDay = (e) => {
-        setDay(e.target.value)
-    }
+        setDay(e.target.value);
+    };
 
     const handleMonth = (e) => {
-        setMonth(e.target.value)
-    }
+        setMonth(e.target.value);
+    };
 
     const handleYear = (e) => {
-        setYear(e.target.value)
-    }
+        setYear(e.target.value);
+    };
+
     useEffect(() => {
-
-        const date1 = new Date(`${year}-${month}-${day}`);
-
+        const date1 = new Date(` ${ year } - ${ month } - ${ day } `);
 
         const date2 = new Date();
-
 
         if (date1 > date2) {
             setIsDate1Greater(true);
@@ -40,48 +39,130 @@ function Age() {
         }
     }, [day, month, year]);
 
-    const calAge = () => {
+    useEffect(() => {
         const currentDate = new Date();
         const curday = parseInt(currentDate.getDate(), 10);
         const curmonth = parseInt(currentDate.getMonth() + 1, 10);
         const curyear = parseInt(currentDate.getFullYear(), 10);
-        
-
+    
         let curYear = curyear - parseInt(year, 10);
         let curMonth;
         let curDay;
+    
         if (curmonth < parseInt(month, 10)) {
-            curYear--
+            curYear--;
             curMonth = curmonth + 12 - parseInt(month, 10);
+        } else {
+            curMonth = curmonth - parseInt(month, 10);
         }
-        else {
-            curMonth = curmonth - parseInt(month, 10)
-        }
-
+    
         if (curday < parseInt(day, 10)) {
-            curDay = curday + 31 - parseInt(day, 10)
+            curDay = curday + 31 - parseInt(day, 10);
             curMonth--;
             if (curMonth < 0) {
                 curMonth += 12;
                 curYear--;
             }
-        }
-        else {
+        } else {
             curDay = curday - parseInt(day, 10);
         }
+    
+        setDaymain(curDay);
+        setMonthmain(curMonth);
+        setYearmain(curYear);
+    }, [year, month, day]); // Depend on year, month, day
+    
+    
 
-        setDaymain(curDay)
-        setMonthmain(curMonth)
-        setYearmain(curYear)
-        console.log(yearmain)
-        countToYear()
 
+    const countToYear = () => {
+        let from = 1; 
+        const to = yearmain;
+        const step = 1;
+        const interval = 30;
 
-    }
+        const counter = setInterval(() => {
+            if (from >= to) {
+                clearInterval(counter);
+                return;
+            }
+            if (from === yearmain) {
+                clearInterval(counter);
+                return;
+            }
+            from += step;
+
+            
+            if (from > to) {
+                from = to;
+                clearInterval(counter);
+                return;
+            }
+
+            setInrYear(from);
+        }, interval);
+        
+    };
+    const countToMonth = () => {
+        let from = 1; 
+        const to = monthmain;
+        const step = 1;
+        const interval = 30;
+
+        const counter = setInterval(() => {
+            if (from >= to) {
+                clearInterval(counter);
+                return;
+            }
+            if (from === monthmain) {
+                clearInterval(counter);
+                return;
+            }
+            from += step;
+
+            
+            if (from > to) {
+                from = to;
+            }
+
+            setInrMonth(from);
+        }, interval);
+        
+    }; 
+    const countToDay = () => {
+        let from = 1; 
+        const to = daymain;
+        const step = 1;
+        const interval = 30;
+
+        const counter = setInterval(() => {
+            if (from >= to) {
+                clearInterval(counter);
+                return;
+            }
+            if (from === daymain) {
+                clearInterval(counter);
+                return;
+            }
+            from += step;
+
+            
+            if (from > to) {
+                from = to;
+            }
+
+            setInrDay(from);
+        }, interval);
+        
+    }; 
     const handleAge = () => {
 
-
-
+        document.getElementById('input-day-main').classList.add('hidden');
+        document.getElementById('input-month-main').classList.add('hidden');
+        document.getElementById('input-year-main').classList.add('hidden');
+        document.getElementById('input-day1').classList.remove('hidden');
+        document.getElementById('input-month1').classList.remove('hidden');
+        document.getElementById('input-year1').classList.remove('hidden');
 
         if (day === '') {
             document.getElementById('errorday2').classList.remove('hidden')
@@ -186,38 +267,29 @@ function Age() {
             document.getElementById('heading-day').classList.remove('text-red-500')
             document.getElementById('input-day').classList.remove('border-red-500')
         }
+        if (document.getElementById('heading-year').classList.contains('text-red-500') || document.getElementById('heading-month').classList.contains('text-red-500') || document.getElementById('heading-day').classList.contains('text-red-500')) {
+            return
+        }
 
-        calAge()
+        document.getElementById('input-day-main').classList.remove('hidden');
+        document.getElementById('input-month-main').classList.remove('hidden');
+        document.getElementById('input-year-main').classList.remove('hidden');
+        document.getElementById('input-day1').classList.add('hidden');
+        document.getElementById('input-month1').classList.add('hidden');
+        document.getElementById('input-year1').classList.add('hidden');
+        
+        
+        countToYear();
+        countToDay();
+        countToMonth();
+        
+
+        
 
     }
 
-    const countToYear = () => {
-        let from = 1; // Start from 1
-        const to = parseInt(yearmain, 10);
-        const step = 1;
-        const interval = 30; // 3 increments per second (1000 ms / 3)
-    
-        const counter = setInterval(() => {
-          if (from >= to) {
-            clearInterval(counter);
-            return;
-          }
-          if(from===parseInt(yearmain,10)){
-            clearInterval(counter);
-            return;
-          }
-          from += step;
-    
-          // Ensure we don't exceed the target value
-          if (from > to) {
-            from = to;
-          }
-    
-          setInrYear(from);
-        }, interval);
-      };
-    
-      
+ 
+
 
 
 
@@ -312,17 +384,19 @@ function Age() {
 
                 <div className='flex flex-col justify-left'>
                     <div className='flex flex-row items-center '>
-                        <p id='input-year' className='md:text-8xl text-5xl text-customGreen custom-input italic'>--</p>
-                        <p id='input-year-main' className='md:text-8xl text-5xl text-customGreen custom-input italic'>{incYear}</p>
-                        <p className=' md:text-8xl text-5xl text-black font-bold italic'> years</p>
+                        <p id='input-year1' className='md:text-8xl text-5xl text-customGreen custom-input italic'>--</p>
+                        <p id='input-year-main' className='hidden md:text-8xl text-5xl text-customGreen custom-input italic'>{incYear}</p>
+                        <p className=' md:text-8xl text-5xl text-black font-bold italic'>&nbsp;years</p>
                     </div>
                     <div className='flex flex-row items-center'>
-                        <p id='input-month' className='md:text-8xl text-5xl text-customGreen custom-input italic'>--</p>
-                        <p className=' md:text-8xl text-5xl text-black font-bold italic'> months</p>
+                        <p id='input-month1' className='md:text-8xl text-5xl text-customGreen custom-input italic'>--</p>
+                        <p id='input-month-main' className='hidden md:text-8xl text-5xl text-customGreen custom-input italic'>{incMonth}</p>
+                        <p className=' md:text-8xl text-5xl text-black font-bold italic'>&nbsp;months</p>
                     </div>
                     <div className='flex flex-row items-center'>
-                        <p id='input-month' className='md:text-8xl text-5xl text-customGreen custom-input italic'>--</p>
-                        <p className=' md:text-8xl text-5xl text-black font-bold italic'> days</p>
+                        <p id='input-day1' className='md:text-8xl text-5xl text-customGreen custom-input italic'>--</p>
+                        <p id='input-day-main' className='hidden md:text-8xl text-5xl text-customGreen custom-input italic'>{incDay}</p>
+                        <p className=' md:text-8xl text-5xl text-black font-bold italic'>&nbsp;days</p>
                     </div>
                 </div>
 
